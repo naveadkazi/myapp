@@ -38,6 +38,7 @@ msg "(2/3) Gradle $BUILD_COMMAND"
 msg "(7/3) Checking if output file was created"
 if [ -f "$OUTPUT_PATH" ]; then
         echo "SUCCESS: Output is here: $OUTPUT_PATH"
+        ls "$OUTPUT_PATH"
 else
         echo "ERROR: Output does NOT exist"
         exit 99
