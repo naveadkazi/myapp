@@ -55,5 +55,5 @@ else
         echo "ERROR: Output does NOT exist"
         echo "$OUTPUT_PATH"
 fi
-echo "sleeping infinity"
-sleep infinity
+#echo "sleeping infinity"
+#sleep infinity
