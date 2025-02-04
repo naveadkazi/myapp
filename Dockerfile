@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # On startup, execute the build
-# we neeed to pass the new version Name, version code will be autoincremented
+#Pass command to build the image
 RUN chmod +x ./android/build-inside-docker.sh
 ENTRYPOINT ["./android/build-inside-docker.sh"]
 

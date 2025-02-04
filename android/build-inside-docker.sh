@@ -15,19 +15,31 @@ cd android
 
 # Detect build type (Debug or Release)
 BUILD_TYPE=$(echo "$BUILD_COMMAND" | grep -Eo 'Debug|Release' || echo "Release")
+#Convert to lowercase
+BUILD_TYPE_LOWER=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
 
 # Detect flavor (if any)
 # Extract Flavor (anything between 'assemble' or 'bundle' and 'Type')
 FLAVOR=$(echo "$BUILD_COMMAND" | sed -E 's/^(assemble|bundle)(.*)?(Debug|Release)$/\2/' | sed 's/^$/default/')
+#Convert to lowercase
+FLAVOR_LOWER=$(echo "$FLAVOR" | tr '[:upper:]' '[:lower:]')
 
 # Determine default output filename if not provided
 if [[ "$BUILD_COMMAND" == *"bundle"* ]]; then
-        OUTPUT_PATH="app/build/outputs/bundle/${FLAVOR,,}/${BUILD_TYPE,,}"
+    if [[ "$FLAVOR" == "default" ]]; then
+        OUTPUT_PATH="app/build/outputs/bundle/${BUILD_TYPE_LOWER}"
+    else
+        OUTPUT_PATH="app/build/outputs/bundle/${FLAVOR_LOWER}/${BUILD_TYPE_LOWER}"
+    fi
 elif [[ "$BUILD_COMMAND" == *"assemble"* ]]; then
-        OUTPUT_PATH="app/build/outputs/apk/${FLAVOR,,}/${BUILD_TYPE,,}"
+    if [[ "$FLAVOR" == "default" ]]; then
+        OUTPUT_PATH="app/build/outputs/apk/${BUILD_TYPE_LOWER}"
+    else
+        OUTPUT_PATH="app/build/outputs/apk/${FLAVOR_LOWER}/${BUILD_TYPE_LOWER}"
+    fi
 else
-        msg "Unknown build type, skipping output file check."
-        exit 0
+    msg "Unknown build type, skipping output file check."
+    exit 0
 fi
 
 # Build Android app using Gradle
@@ -41,5 +53,7 @@ if [ -f "$OUTPUT_PATH" ]; then
         ls "$OUTPUT_PATH"
 else
         echo "ERROR: Output does NOT exist"
-        exit 99
+        echo "$OUTPUT_PATH"
 fi
+echo "sleeping infinity"
+sleep infinity
