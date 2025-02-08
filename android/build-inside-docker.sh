@@ -7,6 +7,10 @@ function msg {
 
 # Default build command
 BUILD_COMMAND=${1:-bundleRelease}
+if [[ ! "$BUILD_COMMAND" =~ ^(assemble|bundle)(.*)(Debug|Release)$ ]]; then
+    msg "Error: Invalid build command format. Must be (assemble|bundle)(Flavor?)(Debug|Release)"
+    exit 1
+fi
 
 # Gradle clean
 msg "(1/3) Gradle clean"
@@ -47,13 +51,14 @@ msg "(2/3) Gradle $BUILD_COMMAND"
 ./gradlew "$BUILD_COMMAND"
 
 # Sanity check that build was created
-msg "(7/3) Checking if output file was created"
-if [ -f "$OUTPUT_PATH" ]; then
-        echo "SUCCESS: Output is here: $OUTPUT_PATH"
-        ls "$OUTPUT_PATH"
+msg "(3/3) Checking if output file was created"
+# Add wildcard check since the actual files have extensions
+if [ -f "$OUTPUT_PATH"/*.apk ] || [ -f "$OUTPUT_PATH"/*.aab ]; then
+    echo "SUCCESS: Output is here: $OUTPUT_PATH"
 else
-        echo "ERROR: Output does NOT exist"
-        echo "$OUTPUT_PATH"
+    echo "ERROR: Output does NOT exist"
+    echo "$OUTPUT_PATH"
+    exit 1  # Add error code for Jenkins
 fi
 #echo "sleeping infinity"
 #sleep infinity

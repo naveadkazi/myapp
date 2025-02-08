@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build Android') {
+            steps {
+                script {
+                    // Build the Docker image
+                    docker.build('android-builder', '.')
+                    
+                    // Run the build script
+                    sh '''
+                        docker run --rm \
+                            -v "${WORKSPACE}":/android-app \
+                            android-builder \
+                            bundleRelease
+                    '''
+                    
+                    // Archive the artifacts
+                    archiveArtifacts artifacts: 'android/app/build/outputs/**/*', fingerprint: true
+                }
+            }
+        }
+    }
+}
